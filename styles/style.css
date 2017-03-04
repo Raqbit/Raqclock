@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#content {
+    width: 320px;
+    height: 240px;
+    
+    background-color: #000;
+    color: #fff;
+
+    text-align: center;
+}
+
+#currentTime {
+    padding-top: 65;
+    font-family: Roboto;
+}
+
+#digits {
+    font-size: 90px;
+}
