@@ -25,26 +25,36 @@ const rootEl = document.getElementById('content');
 // Time object
 let time = { hours: 0, minutes: 0 };
 
-// Alarms object
-let alarms;
-
 // State object
 let currentState = new ClockState();
+// let currentState = new AlarmState();
 
 //Function for switching states
 function switchState(newState) {
     //Cleaning up old state
     currentState.cleanUp();
 
-    console.log('Switching to ' + newState + '.')
+    console.log('Switching state to ' + newState + '.')
 
     //Initiating new state
     switch (newState) {
         case 'clock':
             currentState = new ClockState();
             break;
+        case 'alarm':
+            currentState = new AlarmState();
+            break;
         case 'menu_main':
             currentState = new MenuState('main');
+            break;
+        case 'menu_alarm':
+            currentState = new MenuState('alarm');
+            break;
+        case 'menu_voice':
+            currentState = new MenuState('voice');
+            break;
+        case 'menu_refresh':
+            location.reload(true);
             break;
     }
 
@@ -61,6 +71,10 @@ function switchState(newState) {
 
         //Updating the current state
         currentState.update();
+
+        if (currentAlarm != -1) {
+            checkAlarm();
+        }
     }
 
     // Updating the clock for the first time
@@ -93,16 +107,16 @@ function switchState(newState) {
         //Switch for keys (81:Q:17, 87:W:22, 69:E:23, 82:R:27)
         switch (e.which) {
             case 81:
-                currentState.buttonPress(1, duration);
+                currentState.buttonPress(0, duration);
                 break;
             case 87:
-                currentState.buttonPress(2, duration);
+                currentState.buttonPress(1, duration);
                 break;
             case 69:
-                currentState.buttonPress(3, duration);
+                currentState.buttonPress(2, duration);
                 break;
             case 82: {
-                currentState.buttonPress(4, duration);
+                currentState.buttonPress(3, duration);
                 if (dev && duration > 0.5) {
                     location.reload(true);
                 }
