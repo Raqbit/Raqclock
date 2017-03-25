@@ -95,8 +95,8 @@ class ClockState extends State {
 const menus = {
     main: [{ type: 'subMenu', name: 'alarm', display: 'alarm' },
     { type: 'subMenu', name: 'voice', display: 'voice' },
-    { type: 'action', name: 'refresh', display: 'refresh', action: 'refresh' }],
-    alarm: ['profile1', 'profile2']
+    { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } }],
+    alarm: [{ type: 'action', name: 'profile1', display: 'profile 1', action: { type: 'editProfile', property: 1 } }, { type: 'action', name: 'profile2', display: 'profile 2', action: { type: 'editProfile', property: 2 } }, { type: 'action', name: 'profile3', display: 'profile 3', action: { type: 'editProfile', property: 3 } }]
 };
 
 class MenuState extends State {
@@ -111,7 +111,7 @@ class MenuState extends State {
                 if (item.type === 'subMenu') {
                     document.getElementById('menuList').innerHTML += '<button class="menuOption" onclick="MenuState.switchMenu(\'' + item.name + '\')">' + item.display + '</button>';
                 } else if (item.type === 'action') {
-                    document.getElementById('menuList').innerHTML += '<button class="menuOption" onclick="MenuState.execAction(\'' + item.action + '\')">' + item.display + '</button>';
+                    document.getElementById('menuList').innerHTML += '<button class="menuOption" onclick="MenuState.execAction(\'' + item.action.type + '\', ' + item.action.property + ')">' + item.display + '</button>';
                 }
             });
         } else {
@@ -130,11 +130,31 @@ class MenuState extends State {
         console.log('Switching state to ' + dir + ' menu.')
     }
 
-    static execAction(action) {
-        switch (action) {
+    static execAction(type, data) {
+        switch (type) {
             case 'refresh': {
                 location.reload(true);
+                break;
+            }
+            case 'editProfile': {
+                currentState = new ProfileEditState(data);
+                break;
             }
         }
     }
+}
+
+class ProfileEditState extends State {
+    constructor(profile) {
+        super();
+        rootEl.innerHTML = '<h2 id="menuTitle">Edit profile ' + profile + '</h2>';
+    }
+
+    buttonPress(button, duration) {
+        if (button == 0) {
+            switchState('clock');
+        } else if (button == 1) {
+            MenuState.switchMenu('alarm');
+        }
+    };
 }

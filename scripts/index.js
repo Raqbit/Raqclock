@@ -26,8 +26,9 @@ const rootEl = document.getElementById('content');
 let time = { hours: 0, minutes: 0 };
 
 // State object
-let currentState = new ClockState();
+// let currentState = new ClockState();
 // let currentState = new AlarmState();
+let currentState = new ProfileEditState(1);
 
 //Function for switching states
 function switchState(newState) {
