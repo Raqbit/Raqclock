@@ -17,7 +17,6 @@ body {
     overflow-x: hidden;
 
     position: relative;
-
 }
 
 #content::-webkit-scrollbar { 
@@ -26,8 +25,15 @@ body {
 
 /*Clock State*/
 #currentTime {
-    padding-top: 50;
-    text-align: center;
+    margin: 0;
+
+    width:100%;
+    height: 100%;
+
+    display:flex;
+
+    align-items: center;
+    justify-content: center;
 }
 
 #digits {
@@ -37,22 +43,26 @@ body {
 #alarmSetImg {
     left: 0;
     bottom: 0;
+
     width: 40px;
     height: 40px;
-    margin-left: 2px;
-    position: absolute;
-}
 
-#alarmSetTextDiv {
-    right: 0;
-    bottom: 0;
+    margin-left: 2px;
+    margin-bottom: 2px;
+
     position: absolute;
 }
 
 #alarmSetText {
+    right: 0;
+    bottom: 0;
+
+    position: absolute;
+
     margin-bottom: 2px;
+    margin-top: 0;
     margin-right: 2px;
-    padding: 0;
+
     font-weight: bold;
     font-size: 20px
 }
@@ -67,17 +77,16 @@ body {
         text-align: center;
 }
 #menuList {
-    text-align: center;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: block;
+    padding: 0;
+    margin: auto;
 }
 
 button {
     width: 280px;
     height: 80px;
-    
 
+    display: block;
+    
     font-family: Roboto;
 
     background-color: #000;
@@ -89,21 +98,37 @@ button {
 
 button.menuOption {
     margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /*Alarm State*/
 
 #alarmBig {
+    animation: shake 0.82s infinite both;
     display: block;
     margin: auto;
     width: 150;
-    height: 150;
 }
 
 #stopAlarm {
-    position: absolute;
-    bottom:0;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 10px;
+    margin: auto;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }

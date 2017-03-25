@@ -32,8 +32,8 @@ let alarms = [
         minutes: 0
     },
     {
-        hours: 18,
-        minutes: 22
+        hours: 12,
+        minutes: 20
     }];
 
 // Current Alarm
@@ -49,7 +49,7 @@ function injectVisAlarm() {
     const alarm = alarms[currentAlarm];
     const timeString = ClockState.getTimeString(alarm.hours, alarm.minutes);
     rootEl.innerHTML += '<img id="alarmSetImg" src="images/alarm.svg">';
-    rootEl.innerHTML += '<div id="alarmSetTextDiv"><p id="alarmSetText">' + timeString[0] + '<span id="alarmAmPm">' + timeString[1] + '</span></p></div>';
+    rootEl.innerHTML += '<p id="alarmSetText">' + timeString[0] + '<span id="alarmAmPm">' + timeString[1] + '</span></p>';
 }
 
 function updateVisAlarm() {
@@ -64,7 +64,7 @@ function switchAlarm(newAlarm, injectAlarm) {
         currentAlarm = -1;
         if (injectAlarm) {
             document.getElementById("alarmSetImg").outerHTML = '';
-            document.getElementById("alarmSetTextDiv").outerHTML = '';
+            document.getElementById("alarmSetText").outerHTML = '';
         }
     } else {
         console.log('Switching alarm to ' + newAlarm + ' (' + alarms[newAlarm].hours + ':' + alarms[newAlarm].minutes + ').')

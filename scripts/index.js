@@ -44,18 +44,6 @@ function switchState(newState) {
         case 'alarm':
             currentState = new AlarmState();
             break;
-        case 'menu_main':
-            currentState = new MenuState('main');
-            break;
-        case 'menu_alarm':
-            currentState = new MenuState('alarm');
-            break;
-        case 'menu_voice':
-            currentState = new MenuState('voice');
-            break;
-        case 'menu_refresh':
-            location.reload(true);
-            break;
     }
 
 }
