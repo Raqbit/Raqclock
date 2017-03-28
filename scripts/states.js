@@ -147,7 +147,7 @@ class MenuState extends State {
 class ProfileEditState extends State {
     constructor(profile) {
         super();
-        rootEl.innerHTML = '<h2 id="menuTitle">Edit profile ' + profile + '</h2>';
+        rootEl.innerHTML = '<h2 id="menuTitle">Edit profile ' + profile + '</h2><div id="timeInput"><div id="hourInput"><button></button></div><div id="minInput"></div></div>';
     }
 
     buttonPress(button, duration) {
