@@ -20,15 +20,15 @@
 const dev = true;
 
 // Root content element
-const rootEl = document.getElementById('content');
+const rootEl = document.getElementsByClassName('content')[0];
 
 // Time object
 let time = { hours: 0, minutes: 0 };
 
 // State object
-// let currentState = new ClockState();
+let currentState = new ClockState();
 // let currentState = new AlarmState();
-let currentState = new ProfileEditState(1);
+// let currentState = new ProfileEditState(1);
 
 //Function for switching states
 function switchState(newState) {

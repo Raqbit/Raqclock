@@ -31,7 +31,7 @@ class AlarmState extends State {
     constructor() {
         super();
         currentAlarm = -1;
-        rootEl.innerHTML = '<img id="alarmBig" src="images/alarm.svg"><button id="stopAlarm" onclick="switchState(\'clock\')">Stop</button>';
+        rootEl.innerHTML = '<img class="alarmBig" src="images/alarm.svg"><button onclick="switchState(\'clock\')">Stop</button>';
         this.sound = new Audio('sounds/carbon.ogg');
         this.sound.loop = true;
         this.sound.play();
@@ -47,7 +47,7 @@ class ClockState extends State {
 
     constructor() {
         super();
-        rootEl.innerHTML = '<div id="currentTime"><h1><span id="digits"></span><span id="amPm"></span></h1></div>';
+        rootEl.innerHTML = '<div class="currentTime"><h1><span class="digits"></span><span class="amPm"></span></h1></div>';
         if (currentAlarm != -1) {
             injectVisAlarm();
         }
@@ -67,17 +67,17 @@ class ClockState extends State {
     };
 
     update() {
-        const timeDigitsEl = document.getElementById('digits');
-        const amPmEl = document.getElementById('amPm');
+        const timeDigitsEl = document.getElementsByClassName('digits')[0];
+        const amPmEl = document.getElementsByClassName('amPm')[0];
 
-        const timeString = ClockState.getTimeString(time.hours, time.minutes);
+        const timeString = ClockState.get12hrTimeString(time.hours, time.minutes);
 
         //Combine hours & minutes, setting html
         timeDigitsEl.innerHTML = timeString[0];
         amPmEl.innerHTML = timeString[1];
     };
 
-    static getTimeString(hours, minutes) {
+    static get12hrTimeString(hours, minutes) {
         const ampm = (hours >= 12 ? 'pm' : 'am').toUpperCase();
 
         // Converting 24-hour to 12-hour
@@ -90,13 +90,20 @@ class ClockState extends State {
         minutes = minutes < 10 ? '0' + minutes : minutes;
         return ([hours + ':' + minutes, ampm])
     }
+
+    static get24hrTimeString(hours, minutes) {
+        // Add 0 before minutes if < 10, same with hours
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        return (hours + ':' + minutes);
+    }
 }
 
 const menus = {
     main: [{ type: 'subMenu', name: 'alarm', display: 'alarm' },
     { type: 'subMenu', name: 'voice', display: 'voice' },
     { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } }],
-    alarm: [{ type: 'action', name: 'profile1', display: 'profile 1', action: { type: 'editProfile', property: 1 } }, { type: 'action', name: 'profile2', display: 'profile 2', action: { type: 'editProfile', property: 2 } }, { type: 'action', name: 'profile3', display: 'profile 3', action: { type: 'editProfile', property: 3 } }]
+    alarm: [{ type: 'action', name: 'profile1', display: 'edit profile 1', action: { type: 'editProfile', property: 1 } }, { type: 'action', name: 'profile2', display: 'edit profile 2', action: { type: 'editProfile', property: 2 } }, { type: 'action', name: 'profile3', display: 'edit profile 3', action: { type: 'editProfile', property: 3 } }]
 };
 
 class MenuState extends State {
@@ -104,14 +111,16 @@ class MenuState extends State {
         super();
         this.dir = dir;
 
-        rootEl.innerHTML = '<h2 id="menuTitle">' + this.dir + ' menu</h2><ul id="menuList"></ul>';
+        rootEl.innerHTML = '<h2 class="menuTitle">' + this.dir + ' menu</h2><ul class="menuList"></ul>';
 
         if (menus[dir] instanceof Array) {
             menus[dir].forEach(item => {
                 if (item.type === 'subMenu') {
-                    document.getElementById('menuList').innerHTML += '<button class="menuOption" onclick="MenuState.switchMenu(\'' + item.name + '\')">' + item.display + '</button>';
+                    document.getElementsByClassName('menuList')[0].innerHTML +=
+                        '<button class="menuOption" onclick="MenuState.switchMenu(\'' + item.name + '\')">' + item.display + '</button>';
                 } else if (item.type === 'action') {
-                    document.getElementById('menuList').innerHTML += '<button class="menuOption" onclick="MenuState.execAction(\'' + item.action.type + '\', ' + item.action.property + ')">' + item.display + '</button>';
+                    document.getElementsByClassName('menuList')[0].innerHTML +=
+                        '<button class="menuOption" onclick="MenuState.execAction(\'' + item.action.type + '\', ' + item.action.property + ')">' + item.display + '</button>';
                 }
             });
         } else {
@@ -138,6 +147,7 @@ class MenuState extends State {
             }
             case 'editProfile': {
                 currentState = new ProfileEditState(data);
+                console.log('Switching state to edit profile ' + data + ' menu.')
                 break;
             }
         }
@@ -147,10 +157,60 @@ class MenuState extends State {
 class ProfileEditState extends State {
     constructor(profile) {
         super();
-        rootEl.innerHTML = '<h2 id="menuTitle">Edit profile ' + profile + '</h2><div id="timeInput"><div id="hourInput"><button></button></div><div id="minInput"></div></div>';
+        this.profile = profile;
+        this.time = alarms[profile - 1];
+        rootEl.innerHTML = `<h2 class="menuTitle editProfileHeading">Edit profile ` + profile + `</h2>
+         <div class="timeInput">
+         <button class="timeSelector" onclick="currentState.editTime(true, true)">&#9650;</button>
+         <button class="timeSelector" onclick="currentState.editTime(false, true)">&#9650;</button>
+         <span class="timeSelectorTime">`+
+            ClockState.get24hrTimeString(this.time.hours, this.time.minutes) + `</span>
+         <button class="timeSelector" onclick="currentState.editTime(true, false)">&#9660;</button>
+         <button class="timeSelector" onclick="currentState.editTime(false, false)">&#9660;</button>
+         </div>`;
+    }
+
+    editTime(hours, add) {
+        const timeEl = document.getElementsByClassName('timeSelectorTime')[0];
+        if (add) {
+            if (hours) {
+                //Add one to hours, wrapping around at 24:00
+                if (this.time.hours + 1 === 24) {
+                    this.time.hours = 0;
+                } else {
+                    this.time.hours++;
+                }
+            } else {
+                //Add one to minutes, wrapping around at 00:61
+                if (this.time.minutes + 1 === 60) {
+                    this.time.minutes = 0;
+                    this.time.hours++;
+                } else {
+                    this.time.minutes++;
+                }
+            }
+        } else {
+            if (hours) {
+                if (this.time.hours - 1 === -1) {
+                    this.time.hours = 23;
+                } else {
+                    this.time.hours--;
+                }
+            } else {
+                if (this.time.minutes - 1 === -1) {
+                    this.time.minutes = 59;
+                    this.time.hours--;
+                } else {
+                    this.time.minutes--;
+                }
+            }
+        }
+        timeEl.innerHTML = ClockState.get24hrTimeString(this.time.hours, this.time.minutes);
     }
 
     buttonPress(button, duration) {
+        alarms[this.profile - 1] = this.time;
+        setCookie('alarmTimes', JSON.stringify(alarms), 5);
         if (button == 0) {
             switchState('clock');
         } else if (button == 1) {

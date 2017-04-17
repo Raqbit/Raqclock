@@ -4,7 +4,7 @@ body {
 }
 
 /*Root element of page content*/
-#content {
+.content {
     width: 320px;
     height: 240px;
     
@@ -19,12 +19,12 @@ body {
     position: relative;
 }
 
-#content::-webkit-scrollbar { 
+.content::-webkit-scrollbar { 
     display: none; 
 }
 
 /*Clock State*/
-#currentTime {
+.currentTime {
     margin: 0;
 
     width:100%;
@@ -36,11 +36,12 @@ body {
     justify-content: center;
 }
 
-#digits {
+.digits {
     font-size: 90px;
 }
 
-#alarmSetImg {
+
+.alarmSetImg {
     left: 0;
     bottom: 0;
 
@@ -53,7 +54,7 @@ body {
     position: absolute;
 }
 
-#alarmSetText {
+.alarmSetText {
     right: 0;
     bottom: 0;
 
@@ -67,16 +68,16 @@ body {
     font-size: 20px
 }
 
-#alarmAmPm {
+.alarmAmPm {
     font-size: 10px
 }
 
 /*Menu state*/
 
-#menuTitle {
+.menuTitle {
         text-align: center;
 }
-#menuList {
+.menuList {
     padding: 0;
     margin: auto;
 }
@@ -92,27 +93,24 @@ button {
     background-color: #000;
     border-color: #fff;
     color: #fff;
+    text-decoration: none;
 
     font-size: 30px;
+
+    margin: auto;
 }
 
 button.menuOption {
     margin-bottom: 10px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /*Alarm State*/
 
-#alarmBig {
+.alarmBig {
     animation: shake 0.82s infinite both;
     display: block;
     margin: auto;
     width: 150;
-}
-
-#stopAlarm {
-    margin: auto;
 }
 
 @keyframes shake {
@@ -131,4 +129,24 @@ button.menuOption {
   40%, 60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+/*Edit Alarm Menu*/
+
+button.timeSelector {
+  width: 140px;
+  height: 40px;
+  display: inline-block;
+}
+
+span.timeSelectorTime {
+    font-size: 90px;
+}
+
+.timeInput {
+    text-align: center;
+}
+h2.editProfileHeading {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
