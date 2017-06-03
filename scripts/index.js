@@ -30,23 +30,18 @@ let currentState = new ClockState();
 // let currentState = new AlarmState();
 // let currentState = new ProfileEditState(1);
 
+const alarm = new Audio('sounds/carbon.ogg');
+alarm.loop = true;
+
 //Function for switching states
-function switchState(newState) {
+function switchState(newState, data) {
     //Cleaning up old state
     currentState.cleanUp();
 
-    console.log('Switching state to ' + newState + '.')
+    console.log('Switching state to ' + newState.name + '.')
 
     //Initiating new state
-    switch (newState) {
-        case 'clock':
-            currentState = new ClockState();
-            break;
-        case 'alarm':
-            currentState = new AlarmState();
-            break;
-    }
-
+    currentState = new newState(data);
 }
 
 // Keeping track of time

@@ -83,6 +83,6 @@ function checkAlarm() {
     const alarm = alarms[currentAlarm];
 
     if (alarm.hours === time.hours && alarm.minutes === time.minutes && !(currentState instanceof AlarmState)) {
-        switchState('alarm');
+        switchState(AlarmState);
     }
 }

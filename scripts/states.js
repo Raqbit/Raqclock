@@ -30,16 +30,24 @@ class State {
 class AlarmState extends State {
     constructor() {
         super();
+        this.name = 'AlarmState';
         currentAlarm = -1;
-        rootEl.innerHTML = '<img class="alarmBig" src="images/alarm.svg"><button onclick="switchState(\'clock\')">Stop</button>';
-        this.sound = new Audio('sounds/carbon.ogg');
-        this.sound.loop = true;
-        this.sound.play();
+        rootEl.innerHTML = '<img class="alarmBig" src="images/alarm.svg"><button onclick="switchState(ClockState)">Stop</button>';
+        alarm.play();
     }
 
     cleanUp() {
-        this.sound.pause();
+        alarm.pause();
+        alarm.currentTime = 0;
         rootEl.innerHTML = "";
+    }
+}
+
+class LoadingState extends State {
+    constructor() {
+        super();
+        this.name = 'LoadingState';
+        rootEl.innerHTML = '<div class="loader">Shutting down</div>'
     }
 }
 
@@ -47,6 +55,7 @@ class ClockState extends State {
 
     constructor() {
         super();
+        this.name = 'ClockState';
         rootEl.innerHTML = '<div class="currentTime"><h1><span class="digits"></span><span class="amPm"></span></h1></div>';
         if (currentAlarm != -1) {
             injectVisAlarm();
@@ -102,13 +111,15 @@ class ClockState extends State {
 const menus = {
     main: [{ type: 'subMenu', name: 'alarm', display: 'alarm' },
     { type: 'subMenu', name: 'voice', display: 'voice' },
-    { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } }],
+    { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } },
+    { type: 'action', name: 'shutdown', display: 'shutdown', action: { type: 'shutdown' } }],
     alarm: [{ type: 'action', name: 'profile1', display: 'edit profile 1', action: { type: 'editProfile', property: 1 } }, { type: 'action', name: 'profile2', display: 'edit profile 2', action: { type: 'editProfile', property: 2 } }, { type: 'action', name: 'profile3', display: 'edit profile 3', action: { type: 'editProfile', property: 3 } }]
 };
 
 class MenuState extends State {
     constructor(dir) {
         super();
+        this.name = 'MenuState';
         this.dir = dir;
 
         rootEl.innerHTML = '<h2 class="menuTitle">' + this.dir + ' menu</h2><ul class="menuList"></ul>';
@@ -130,7 +141,7 @@ class MenuState extends State {
 
     buttonPress(button, duration) {
         if (button == 0) {
-            switchState('clock');
+            switchState(ClockState);
         }
     };
 
@@ -145,8 +156,12 @@ class MenuState extends State {
                 location.reload(true);
                 break;
             }
+            case 'shutdown': {
+                switchState(LoadingState);
+                break;
+            }
             case 'editProfile': {
-                currentState = new ProfileEditState(data);
+                switchState(ProfileEditState, data);
                 console.log('Switching state to edit profile ' + data + ' menu.')
                 break;
             }
@@ -157,6 +172,7 @@ class MenuState extends State {
 class ProfileEditState extends State {
     constructor(profile) {
         super();
+        this.name = 'ProfileEditState';
         this.profile = profile;
         this.time = alarms[profile - 1];
         rootEl.innerHTML = `<h2 class="menuTitle editProfileHeading">Edit profile ` + profile + `</h2>
@@ -174,35 +190,15 @@ class ProfileEditState extends State {
         const timeEl = document.getElementsByClassName('timeSelectorTime')[0];
         if (add) {
             if (hours) {
-                //Add one to hours, wrapping around at 24:00
-                if (this.time.hours + 1 === 24) {
-                    this.time.hours = 0;
-                } else {
-                    this.time.hours++;
-                }
+                this.time.hours = this.time.hours === 23 ? 0 : this.time.hours + 1;
             } else {
-                //Add one to minutes, wrapping around at 00:61
-                if (this.time.minutes + 1 === 60) {
-                    this.time.minutes = 0;
-                    this.time.hours++;
-                } else {
-                    this.time.minutes++;
-                }
+                this.time.minutes = this.time.minutes === 59 ? 0 : this.time.minutes + 1;
             }
         } else {
             if (hours) {
-                if (this.time.hours - 1 === -1) {
-                    this.time.hours = 23;
-                } else {
-                    this.time.hours--;
-                }
+                this.time.hours = this.time.hours === 0 ? 23 : this.time.hours - 1;
             } else {
-                if (this.time.minutes - 1 === -1) {
-                    this.time.minutes = 59;
-                    this.time.hours--;
-                } else {
-                    this.time.minutes--;
-                }
+                this.time.minutes = this.time.minutes === 0 ? 59 : this.time.minutes - 1;
             }
         }
         timeEl.innerHTML = ClockState.get24hrTimeString(this.time.hours, this.time.minutes);
@@ -212,7 +208,7 @@ class ProfileEditState extends State {
         alarms[this.profile - 1] = this.time;
         setCookie('alarmTimes', JSON.stringify(alarms), 5);
         if (button == 0) {
-            switchState('clock');
+            switchState(ClockState);
         } else if (button == 1) {
             MenuState.switchMenu('alarm');
         }
