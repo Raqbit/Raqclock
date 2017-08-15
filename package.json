@@ -8,7 +8,7 @@
     "start": "npm run build.ng && npm run build.tasks && npm run build.electron && npm run start.electron",
     "start.watch": "npm run build.ng.watch",
     "start.electron": "electron dist/electron-app.js",
-    "watch": "npm run build.tasks && npm run build.electron && npm run build.watch && npm run start.electron",
+    "watch": "npm run build.tasks && npm run build.electron && npm run build.watch",
     "build": "ng build --base-href . && npm run build.electron",
     "build.prod": "ng build --prod --base-href . && npm run build.electron",
     "build.ng": "ng build --base-href .",

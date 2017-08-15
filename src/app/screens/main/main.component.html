@@ -1,0 +1,10 @@
+<div class="currentTime">
+    <h1>
+        <span class="digits">{{_currentTime.digits}}</span>
+        <span class="amPm">{{_currentTime.ampm}}</span>
+    </h1>
+</div>
+<div *ngIf="_currentAlarm.active" class="alarm">
+    <img class="alarmSetImg" src="assets/img/alarm.svg">
+    <p class="alarmSetText">{{_currentAlarm.digits}}<span class="alarmAmPm">{{_currentAlarm.ampm}}</span></p>
+</div>

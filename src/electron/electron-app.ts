@@ -4,30 +4,92 @@ import * as path from 'path';
 
 let applicationRef: Electron.BrowserWindow = null;
 
-const debugMode = false;
+const debugMode = true;
+
+let wpi;
+
+const pressed = {};
+
+function setupGPIO() {
+    if (!debugMode) {
+        wpi = require('wiring-pi');
+
+        wpi.setup('wpi');
+
+        wpi.pinMode(17, wpi.INPUT);
+        wpi.pullUpDnControl(17, wpi.PUD_UP);
+        wpi.wiringPiISR(7, wpi.INT_EDGE_FALLING, function (delta) {
+            buttonDown(7);
+        });
+        wpi.wiringPiISR(7, wpi.INT_EDGE_RISING, function (delta) {
+            buttonUp(7);
+        });
+
+        wpi.pinMode(22, wpi.INPUT);
+        wpi.pullUpDnControl(22, wpi.PUD_UP);
+        wpi.wiringPiISR(22, wpi.INT_EDGE_FALLING, function (delta) {
+            buttonDown(22);
+        });
+        wpi.wiringPiISR(22, wpi.INT_EDGE_RISING, function (delta) {
+            buttonUp(22);
+        });
+
+        wpi.pinMode(23, wpi.INPUT);
+        wpi.pullUpDnControl(23, wpi.PUD_UP);
+        wpi.wiringPiISR(23, wpi.INT_EDGE_FALLING, function (delta) {
+            buttonDown(23);
+        });
+        wpi.wiringPiISR(23, wpi.INT_EDGE_RISING, function (delta) {
+            buttonUp(23);
+        });
+
+        wpi.pinMode(27, wpi.INPUT);
+        wpi.pullUpDnControl(27, wpi.PUD_UP);
+        wpi.wiringPiISR(27, wpi.INT_EDGE_FALLING, function (delta) {
+            buttonDown(27);
+        });
+        wpi.wiringPiISR(27, wpi.INT_EDGE_RISING, function (delta) {
+            buttonUp(27);
+        });
+    }
+}
+
+function buttonDown(buttonNum) {
+    console.log('Button DOWN: ' + buttonNum);
+    if (pressed[buttonNum]) { return; }
+    pressed[buttonNum] = new Date().getTime();
+}
+
+function buttonUp(buttonNum) {
+    if (!pressed[buttonNum]) { return; }
+    const timestamp = new Date().getTime();
+    const duration = (new Date().getTime() - pressed[buttonNum]);
+
+    console.log('Button UP: ' + buttonNum + ': ' + duration);
+}
 
 const mainWindowSettings: Electron.BrowserWindowConstructorOptions = {
-    width: 800,
-    height: 550,
-    frame: true,
+    width: 320,
+    height: 240,
+    frame: false,
     resizable: false
 };
 
 function initMainListener() {
     ipcMain.on('ELECTRON_BRIDGE_HOST', (event, msg) => {
-        console.log('msg received', msg);
-        if (msg === 'ping') {
-            event.sender.send('ELECTRON_BRIDGE_CLIENT', 'pong');
-        }
+
     });
 }
 
 function createWindow() {
+    if (debugMode) {
+        // mainWindowSettings.frame = true;
+    }
     applicationRef = new BrowserWindow(mainWindowSettings);
     applicationRef.loadURL(`file:///${__dirname}/index.html`);
     if (debugMode) {
         // Open the DevTools.
-        applicationRef.webContents.openDevTools();
+        applicationRef.webContents.openDevTools({ mode: 'detach' });
     }
     applicationRef.on('closed', () => {
         // Dereference the window object, usually you would store windows
@@ -39,6 +101,8 @@ function createWindow() {
     initMainListener();
 
     client.create(applicationRef);
+
+    setupGPIO();
 }
 
 

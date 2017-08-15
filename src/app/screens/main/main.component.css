@@ -1,0 +1,50 @@
+.currentTime {
+    margin: 0;
+
+    width:100%;
+    height: 100%;
+
+    display:flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.digits {
+    font-size: 90px;
+}
+
+.alarmSetImg {
+    left: 0;
+    bottom: 0;
+
+    position: absolute;
+
+    width: 40px;
+    height: 40px;
+
+    margin-left: 2px;
+    margin-bottom: 2px;
+
+}
+
+.alarmSetText {
+    right: 0;
+    bottom: 0;
+
+    position: absolute;
+
+    margin-bottom: 2px;
+    margin-top: 0;
+    margin-right: 2px;
+
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.alarmAmPm {
+    font-size: 10px;
+
+    margin-left:2px;
+    margin-right:1px;
+}
