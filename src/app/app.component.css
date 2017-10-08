@@ -1,0 +1,9 @@
+.router-wrap {
+  width: 430px;
+  height: 240px;
+
+  overflow-x: hidden;
+
+  /* TODO: REMOVE */
+  border: 1px solid #fff;
+}

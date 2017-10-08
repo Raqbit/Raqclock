@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component, HostListener} from '@angular/core';
+import {ButtonService} from "./core/services/button.service";
 
 @Component({
   selector: 'rqc-root',
@@ -6,5 +7,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'rqc';
+
+  constructor(private _button: ButtonService){}
+
+  @HostListener('window:keydown', ['$event'])
+  keyDown(event: KeyboardEvent){
+    this._button.handleEvent(event);
+  }
+
+  @HostListener('window:keyup', ['$event'])
+  keyUp(event: KeyboardEvent){
+    this._button.handleEvent(event);
+  }
 }
