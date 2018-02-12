@@ -19,9 +19,15 @@
 3. **Optional: WiFi** On boot partition, add 'wpa_supplicant.conf' file containing:
 
     ```
+    country=US
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
+
     network={
         ssid="SSID"
+        scan_ssid=1
         psk="passphrase"
+        key_mgmt=WPA-PSK
     }
     ```
 
