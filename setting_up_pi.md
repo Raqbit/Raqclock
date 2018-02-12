@@ -60,29 +60,19 @@
 
 10. Next up is installing a graphical interface.
 
-    In this tutorial I'm going to be installing the standard PIXEL desktop environment.
+    In this tutorial I'm going to be installing matchbox, which is a lightweight window manager.
 
-    The reason I went with PIXEL, and not a minimal openbox installation, is because PIXEL will drag in everything you need to get the desktop up and running, like the display manager.
-
-    Now you might feel like: 'Gee, why did we even go with Raspbian LIGHT in the first place, when we're installing PIXEL?', and the answer to this is simple: Raspbian 'Full' includes a lot of software, like for example Libre Office. Using Raspbian Light, and then installing PIXEL costs less time than installing Raspbian 'Full' and deleting everything. Also the image is A LOT smaller.
-
-    This certainly isn't the most lightweight you can get, but it is the fastest way to get a desktop enviroment running & working well on the pi.
-
-**Installing the PIXEL desktop environment:**
-
-Thanks to **GhostRaider** for the amazing [guide](https://www.raspberrypi.org/forums/viewtopic.php?f=66&t=133691) on the raspberry pi forums!
+**Installing the Matchbox window manager:**
 
 11. Connect back to your pi: `ssh pi@<IP>`, log in with the **new** password.
 
-12. To install a stripped down version of the PIXEL desktop, run:
+12. To install matchbox, run:
 
     ```
-    sudo apt-get install --no-install-recommends raspberrypi-ui-mods
+    sudo apt-get install matchbox-window-manager xserver-xorg x11-xserver-utils xinit
     ```
 
-    Wait a LOT.
-
-13. To get PIXEL to display on the PiTFT, we need another package:
+13. To get matchbox to display on the PiTFT, we need another package:
 
     ```
     sudo apt-get install xserver-xorg-video-fbdev
@@ -106,75 +96,61 @@ Thanks to **GhostRaider** for the amazing [guide](https://www.raspberrypi.org/fo
     EndSection
     ```
 
-15. Now, we should configure the pi to automagically boot to the desktop, without having to log in.
-
-    Run raspi-config: `sudo raspi-config`
-
-    * Boot Options > Desktop/CLI > Desktop Autologin
-    * Hit finish, it should ask you to reboot
-
-16. After rebooting it should display the PIXEL desktop environment on your screen! Hooray!
-
-**Some cosmetics:**
-
-16. Via ssh, disable the lxde panel, screensaver & auto-menu-pointer.
+15. Every system startup the pi user needs to output to the screen (since we're not using a login manager), so we need to add the pi user to the tty group:
 
     ```
-    nano ~/.config/lxsession/LXDE-pi/autostart
+    sudo gpasswd -a pi tty
     ```
 
-    Make sure it looks like this:
+    and also change the permissions of the ttys on bootup:
 
     ```
-    #@lxpanel --profile LXDE-pi
-    @pcmanfm --desktop --profile LXDE-pi
-    #@xscreensaver -no-splash
-    #@point-rpi
-    ```
-17. Nextup, we're going to make everything black:
-
-    ```
-    nano ~/.config/pcmanfm/LXDE-pi/desktop-items-0.conf
-    ```
-    And change:
-    ```
-    walpaper_mode=color
-    ...
-    desktop_bg=#000000
-    destkop_fg=@000000
-    ...
-    show_trash=0
+    sudo sed -i '/^exit 0/c\chmod g+rw /dev/tty?\nexit 0' /etc/rc.local
     ```
 
-18. It's reboot time again. (`sudo reboot`)
-
-19. You should be greeted with an all-black screen, and a pointer: Now it's time to make the pointer dissapear.
-
-    Modify the x start command in lightdm:
-    ```
-    sudo nano /etc/lightdm/lightdm.conf
-    ```
-
-    Change the following line:
-    ```
-    [SeatDefaults]
-    ..
-    xserver-command=X -nocursor
-    ..
-    ```
-
-20. Reboot - Et voila, no cursor no more!
-
-21. Now it's up to you to install any software you'd want to run on bootup:
+16. Now we need to setup a startup script:
 
     ```
-    nano ~/.config/lxsession/LXDE-pi/autostart
+    nano ~/startup.sh
     ```
 
-    For instance add:
-    ```
-    @echo hi
-    ```
-    to run 'echo hi' on startup
+    ```bash
+    #!/bin/bash
 
-**I hope this guide was helpfull!**
+    # disable DPMS (Energy Star) features.
+    xset -dpms
+
+    # disable screen saver
+    xset s off
+
+    # don't blank the video device
+    xset s noblank
+
+    # run window manager
+    matchbox-window-manager -use_cursor no -use_titlebar no  &
+
+    # re-launch on crash
+    while :
+    do
+    # >>RUN PROGRAM<<
+    # For instance a kiosk chrome window:
+    #exec chromium-browser --noerrdialogs --disable-session-crashed-bubble --disable-infobars --disable-translate --disable-cache --disk-cache-dir=/dev/null --disk-cache-size=1 --app=[url]
+    done;
+    ```
+
+17. Start startup script on startup
+
+    ```
+    nano ~/.bashrc
+    ```
+
+    and append:
+
+    ```bash
+    if [ -z "${SSH_TTY}" ]; then
+    # 
+        xinit ~/startpi.sh -- -nocursor
+        # Clear screen if it exits   
+        cat /dev/zero >/dev/fb1
+    fi
+    ```
