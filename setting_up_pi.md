@@ -171,3 +171,5 @@
     ```
     allowed_users=anybody
     ```
+19. Setup & configure retrogame to get input events for the buttons:
+https://learn.adafruit.com/retro-gaming-with-raspberry-pi/adding-controls-software
