@@ -160,3 +160,14 @@
         cat /dev/zero >/dev/fb1
     fi
     ```
+18. Allow pi user to start x:
+
+    ```
+    nano /etc/X11/Xwrapper.config
+    ```
+
+    and change:
+
+    ```
+    allowed_users=anybody
+    ```
