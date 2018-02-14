@@ -58,6 +58,7 @@
 8. Run `sudo raspi-config`, and do the following:
     * Change user password
     * Set hostname
+    * Boot to CLI with autologin
     * Advanced Options > Expand filesystem
     * Update the pi
     * Hit finish
@@ -117,7 +118,7 @@
 16. Now we need to setup a startup script:
 
     ```
-    nano ~/startup.sh
+    nano ~/startpi.sh
     ```
 
     ```bash
