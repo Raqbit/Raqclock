@@ -31,7 +31,7 @@ class LoadingState extends State {
     constructor() {
         super();
         this.name = 'LoadingState';
-        rootEl.innerHTML = '<div class="loader">Shutting down</div>'
+        rootEl.innerHTML = '<div class="loader">Shutting down</div><span id="shutdownMsg">Please wait until bars stop moving</span>'
     }
 }
 
