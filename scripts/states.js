@@ -1,21 +1,3 @@
-/*
-    Copyright (C) 2017 Raqbit
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
 class State {
     buttonPress(button, duration) { };
 
@@ -157,7 +139,17 @@ class MenuState extends State {
                 break;
             }
             case 'shutdown': {
-                switchState(LoadingState);
+                fetch('http://localhost:8080/api/shutdown')
+                    .then(res => {
+                        const txt = res.text();
+                        if (txt == "OK") {
+                            switchState(LoadingState);
+                        } else {
+                            switchState(ClockState);
+                        }
+                    }).catch(e => {
+                        switchState(ClockState);
+                    })
                 break;
             }
             case 'editProfile': {
@@ -177,12 +169,16 @@ class ProfileEditState extends State {
         this.time = alarms[profile - 1];
         rootEl.innerHTML = `<h2 class="menuTitle editProfileHeading">Edit profile ` + profile + `</h2>
          <div class="timeInput">
+         <div class="timeSelectorRow">
          <button class="timeSelector" onclick="currentState.editTime(true, true)">&#9650;</button>
          <button class="timeSelector" onclick="currentState.editTime(false, true)">&#9650;</button>
+         </div>
          <span class="timeSelectorTime">`+
             ClockState.get24hrTimeString(this.time.hours, this.time.minutes) + `</span>
+        <div class="timeSelectorRow">
          <button class="timeSelector" onclick="currentState.editTime(true, false)">&#9660;</button>
          <button class="timeSelector" onclick="currentState.editTime(false, false)">&#9660;</button>
+         </div>
          </div>`;
     }
 
@@ -206,7 +202,7 @@ class ProfileEditState extends State {
 
     buttonPress(button, duration) {
         alarms[this.profile - 1] = this.time;
-        setCookie('alarmTimes', JSON.stringify(alarms), 5);
+        localStorage.setItem('alarmTimes', JSON.stringify(alarms));
         if (button == 0) {
             switchState(ClockState);
         } else if (button == 1) {

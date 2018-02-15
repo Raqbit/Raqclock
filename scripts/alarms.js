@@ -1,25 +1,8 @@
-/*
-    Copyright (C) 2017 Raqbit
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
 // Alarms object
 let alarms;
-if (getCookie('alarmTimes') != '') {
-    alarms = JSON.parse(getCookie('alarmTimes'));
+const storedAlarmTimes = localStorage.getItem('alarmTimes');
+if (storedAlarmTimes) {
+    alarms = JSON.parse(storedAlarmTimes);
 } else {
     alarms = [
         {
@@ -38,9 +21,9 @@ if (getCookie('alarmTimes') != '') {
 
 // Current Alarm
 let currentAlarm;
-
-if (getCookie('currentAlarm') != '') {
-    currentAlarm = getCookie('currentAlarm');
+const storedAlarm = localStorage.getItem('currentAlarm');
+if (storedAlarm) {
+    currentAlarm = storedAlarm;
 } else {
     currentAlarm = -1;
 }
@@ -76,7 +59,7 @@ function switchAlarm(newAlarm, injectAlarm) {
             updateVisAlarm();
         }
     }
-    setCookie('currentAlarm', currentAlarm, 5);
+    localStorage.setItem('currentAlarm', currentAlarm);
 }
 
 function checkAlarm() {
