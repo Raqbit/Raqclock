@@ -114,6 +114,7 @@ button.menuOption {
     position: absolute;
     bottom: 10px;
     left: 40px;
+    width: 250px;
 }
 
 .loader, .loader:before, .loader:after {

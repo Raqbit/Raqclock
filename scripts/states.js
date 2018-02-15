@@ -31,7 +31,7 @@ class LoadingState extends State {
     constructor() {
         super();
         this.name = 'LoadingState';
-        rootEl.innerHTML = '<div class="loader">Shutting down</div><span id="shutdownMsg">Please wait until bars stop moving</span>'
+        rootEl.innerHTML = '<div class="loader">Shutting down</div><span id="shutdownMsg">Please wait until bars stop moving and LED stops flickering.</span>'
     }
 }
 
@@ -93,21 +93,21 @@ class ClockState extends State {
 }
 
 const menus = {
-    main: [{type: 'subMenu', name: 'alarm', display: 'alarm'},
-        {type: 'subMenu', name: 'voice', display: 'voice'},
-        {type: 'action', name: 'refresh', display: 'refresh', action: {type: 'refresh'}},
-        {type: 'action', name: 'shutdown', display: 'shutdown', action: {type: 'shutdown'}}],
+    main: [{ type: 'subMenu', name: 'alarm', display: 'alarm' },
+    { type: 'subMenu', name: 'voice', display: 'voice' },
+    { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } },
+    { type: 'action', name: 'shutdown', display: 'shutdown', action: { type: 'shutdown' } }],
     alarm: [{
         type: 'action',
         name: 'profile1',
         display: 'edit profile 1',
-        action: {type: 'editProfile', property: 1}
+        action: { type: 'editProfile', property: 1 }
     }, {
         type: 'action',
         name: 'profile2',
         display: 'edit profile 2',
-        action: {type: 'editProfile', property: 2}
-    }, {type: 'action', name: 'profile3', display: 'edit profile 3', action: {type: 'editProfile', property: 3}}]
+        action: { type: 'editProfile', property: 2 }
+    }, { type: 'action', name: 'profile3', display: 'edit profile 3', action: { type: 'editProfile', property: 3 } }]
 };
 
 class MenuState extends State {
@@ -151,18 +151,17 @@ class MenuState extends State {
                 break;
             }
             case 'shutdown': {
-                fetch('http://localhost:8080/api/shutdown', {method: 'post'})
+                switchState(LoadingState);
+                fetch('http://localhost:8080/api/shutdown', { method: 'post' })
                     .then(res => {
-                       res.text().then(txt => {
-                           if (txt === 'OK') {
-                               switchState(LoadingState);
-                           } else {
-                               switchState(ClockState);
-                           }
-                       });
+                        res.text().then(txt => {
+                            if (txt !== 'OK') {
+                                switchState(ClockState);
+                            }
+                        });
                     }).catch(e => {
-                    switchState(ClockState);
-                })
+                        switchState(ClockState);
+                    })
                 break;
             }
             case 'editProfile': {
