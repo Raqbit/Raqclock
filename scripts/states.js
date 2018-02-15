@@ -1,7 +1,9 @@
 class State {
-    buttonPress(button, duration) { };
+    buttonPress(button, duration) {
+    };
 
-    update() { };
+    update() {
+    };
 
     cleanUp() {
         rootEl.innerHTML = "";
@@ -91,11 +93,21 @@ class ClockState extends State {
 }
 
 const menus = {
-    main: [{ type: 'subMenu', name: 'alarm', display: 'alarm' },
-    { type: 'subMenu', name: 'voice', display: 'voice' },
-    { type: 'action', name: 'refresh', display: 'refresh', action: { type: 'refresh' } },
-    { type: 'action', name: 'shutdown', display: 'shutdown', action: { type: 'shutdown' } }],
-    alarm: [{ type: 'action', name: 'profile1', display: 'edit profile 1', action: { type: 'editProfile', property: 1 } }, { type: 'action', name: 'profile2', display: 'edit profile 2', action: { type: 'editProfile', property: 2 } }, { type: 'action', name: 'profile3', display: 'edit profile 3', action: { type: 'editProfile', property: 3 } }]
+    main: [{type: 'subMenu', name: 'alarm', display: 'alarm'},
+        {type: 'subMenu', name: 'voice', display: 'voice'},
+        {type: 'action', name: 'refresh', display: 'refresh', action: {type: 'refresh'}},
+        {type: 'action', name: 'shutdown', display: 'shutdown', action: {type: 'shutdown'}}],
+    alarm: [{
+        type: 'action',
+        name: 'profile1',
+        display: 'edit profile 1',
+        action: {type: 'editProfile', property: 1}
+    }, {
+        type: 'action',
+        name: 'profile2',
+        display: 'edit profile 2',
+        action: {type: 'editProfile', property: 2}
+    }, {type: 'action', name: 'profile3', display: 'edit profile 3', action: {type: 'editProfile', property: 3}}]
 };
 
 class MenuState extends State {
@@ -139,17 +151,18 @@ class MenuState extends State {
                 break;
             }
             case 'shutdown': {
-                fetch('http://localhost:8080/api/shutdown')
+                fetch('http://localhost:8080/api/shutdown', {method: 'post'})
                     .then(res => {
-                        const txt = res.text();
-                        if (txt == "OK") {
-                            switchState(LoadingState);
-                        } else {
-                            switchState(ClockState);
-                        }
+                       res.text().then(txt => {
+                           if (txt === 'OK') {
+                               switchState(LoadingState);
+                           } else {
+                               switchState(ClockState);
+                           }
+                       });
                     }).catch(e => {
-                        switchState(ClockState);
-                    })
+                    switchState(ClockState);
+                })
                 break;
             }
             case 'editProfile': {
@@ -173,7 +186,7 @@ class ProfileEditState extends State {
          <button class="timeSelector" onclick="currentState.editTime(true, true)">&#9650;</button>
          <button class="timeSelector" onclick="currentState.editTime(false, true)">&#9650;</button>
          </div>
-         <span class="timeSelectorTime">`+
+         <span class="timeSelectorTime">` +
             ClockState.get24hrTimeString(this.time.hours, this.time.minutes) + `</span>
         <div class="timeSelectorRow">
          <button class="timeSelector" onclick="currentState.editTime(true, false)">&#9660;</button>
